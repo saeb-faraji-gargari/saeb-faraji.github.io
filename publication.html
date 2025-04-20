@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Publications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .publication-section {
+            padding: 50px 15px;
+        }
+        .publication-image {
+            width: 100%;  /* Occupy right half of the page */
+            height: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .list-group-item {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .papers {
+            flex: 0 0 50%; /* Left half: List of papers */
+            padding-right: 15px;
+        }
+        .figure {
+            flex: 0 0 50%; /* Right half: Figure */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="navbar-container"></div>
+
+    <script>
+        fetch("header_bar.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            });
+    </script>
+
+    <section class="publication-section container">
+        <h2 class="text-center mb-4">Selected Publications</h2>
+
+        <div class="row">
+            <div class="papers">
+                <ul id="pub-list" class="list-group">
+                    <!-- List of papers will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="figure">
+                <!-- Image path updated to "images/name.jpeg" -->
+                <img src="images/author-image.jpg" alt="Publication Figure" class="publication-image">
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const dois = [
+            "https://doi.org/10.1016/j.jcp.2024.112931",
+            "10.1016/j.envsoft.2023.105432"
+            // Add more DOIs here
+        ];
+
+        const pubList = document.getElementById("pub-list");
+
+        dois.forEach(doi => {
+            fetch(`https://api.crossref.org/works/${doi}`)
+                .then(response => response.json())
+                .then(data => {
+                    const item = data.message;
+                    const year = item.published['date-parts'][0][0];
+                    const title = item.title[0];
+                    const journal = item['container-title'][0];
+                    const authors = item.author.map(a => `${a.given} ${a.family}`).join(', ');
+
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+
+                    li.innerHTML = `
+                        <p>${authors} (${year}). <em>${title}</em>. <strong>${journal}</strong>.
+                        <a href="https://doi.org/${doi}" target="_blank">DOI</a></p>
+                    `;
+
+                    pubList.appendChild(li);
+                })
+                .catch(error => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item text-danger";
+                    li.textContent = `Failed to load publication for DOI: ${doi}`;
+                    pubList.appendChild(li);
+                    console.error(error);
+                });
+        });
+    </script>
+
+</body>
+
+
+
+
+</html>

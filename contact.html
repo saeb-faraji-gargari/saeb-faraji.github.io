@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Publications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .publication-section {
+            padding: 50px 15px;
+        }
+        .publication-image {
+            width: 100%;  /* Occupy right half of the page */
+            height: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .list-group-item {
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .papers {
+            flex: 0 0 50%; /* Left half: List of papers */
+            padding-right: 15px;
+        }
+        .figure {
+            flex: 0 0 50%; /* Right half: Figure */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar will be loaded here -->
+    <div id="navbar-container"></div>
+
+    <!-- Your fetch script -->
+    <script>
+        fetch("header.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            });
+    </script>
+
+    <!-- Publication section -->
+    <section class="publication-section container">
+        <h2 class="text-center mb-4">Email: saebfaraji@gmail.com</h2>
+    </section>
+
+</body>
+</html>
