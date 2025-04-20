@@ -9,7 +9,7 @@
             padding: 50px 15px;
         }
         .publication-image {
-            width: 100%;  /* Occupy right half of the page */
+            width: 80%;  /* Occupy right half of the page */
             height: auto;
             margin-top: 20px;
             border-radius: 8px;
@@ -36,7 +36,7 @@
     <div id="navbar-container"></div>
 
     <script>
-        fetch("header_bar.html")
+        fetch("header.html")
             .then(res => res.text())
             .then(data => {
                 document.getElementById("navbar-container").innerHTML = data;
@@ -55,7 +55,8 @@
 
             <div class="figure">
                 <!-- Image path updated to "images/name.jpeg" -->
-                <img src="images/author-image.jpg" alt="Publication Figure" class="publication-image">
+                <img src="images/UMLS.png" alt="Publication Figure" class="publication-image">
+                <img src="images/Multiphase.png" alt="Publication Figure" class="publication-image">
             </div>
         </div>
     </section>
@@ -63,7 +64,7 @@
     <script>
         const dois = [
             "https://doi.org/10.1016/j.jcp.2024.112931",
-            "10.1016/j.envsoft.2023.105432"
+            "https://doi.org/10.1016/j.apm.2019.06.002"
             // Add more DOIs here
         ];
 
@@ -100,8 +101,4 @@
     </script>
 
 </body>
-
-
-
-
 </html>
