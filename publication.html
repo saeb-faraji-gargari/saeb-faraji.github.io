@@ -8,26 +8,24 @@
         .publication-section {
             padding: 50px 15px;
         }
-        .publication-image {
-            width: 80%;  /* Occupy right half of the page */
-            height: auto;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-        .list-group-item {
-            margin-bottom: 20px;
-        }
-        .container {
+        .publication-row {
             display: flex;
             flex-wrap: wrap;
+            margin-bottom: 40px;
+            align-items: flex-start;
         }
-        .papers {
-            flex: 0 0 50%; /* Left half: List of papers */
-            padding-right: 15px;
+        .paper {
+            flex: 1;
+            padding-right: 20px;
         }
         .figure {
-            flex: 0 0 50%; /* Right half: Figure */
+            flex: 1;
             text-align: center;
+        }
+        .publication-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -46,31 +44,23 @@
     <section class="publication-section container">
         <h2 class="text-center mb-4">Selected Publications</h2>
 
-        <div class="row">
-            <div class="papers">
-                <ul id="pub-list" class="list-group">
-                    <!-- List of papers will be dynamically added here -->
-                </ul>
-            </div>
-
-            <div class="figure">
-                <!-- Image path updated to "images/name.jpeg" -->
-                <img src="images/UMLS.png" alt="Publication Figure" class="publication-image">
-                <img src="images/Multiphase.png" alt="Publication Figure" class="publication-image">
-            </div>
-        </div>
+        <div id="publication-container"></div>
     </section>
 
     <script>
         const dois = [
-            "https://doi.org/10.1016/j.jcp.2024.112931",
-            "https://doi.org/10.1016/j.apm.2019.06.002"
-            // Add more DOIs here
+            "10.1016/j.jcp.2024.112931",
+            "10.1016/j.apm.2019.06.002"
         ];
 
-        const pubList = document.getElementById("pub-list");
+        const images = [
+            "images/UMLS.png",
+            "images/Multiphase.png"
+        ];
 
-        dois.forEach(doi => {
+        const container = document.getElementById("publication-container");
+
+        dois.forEach((doi, index) => {
             fetch(`https://api.crossref.org/works/${doi}`)
                 .then(response => response.json())
                 .then(data => {
@@ -80,25 +70,34 @@
                     const journal = item['container-title'][0];
                     const authors = item.author.map(a => `${a.given} ${a.family}`).join(', ');
 
-                    const li = document.createElement("li");
-                    li.className = "list-group-item";
+                    const row = document.createElement("div");
+                    row.className = "publication-row";
 
-                    li.innerHTML = `
+                    const paperDiv = document.createElement("div");
+                    paperDiv.className = "paper";
+                    paperDiv.innerHTML = `
                         <p>${authors} (${year}). <em>${title}</em>. <strong>${journal}</strong>.
                         <a href="https://doi.org/${doi}" target="_blank">DOI</a></p>
                     `;
 
-                    pubList.appendChild(li);
+                    const imageDiv = document.createElement("div");
+                    imageDiv.className = "figure";
+                    imageDiv.innerHTML = `<img src="${images[index]}" alt="Figure ${index + 1}" class="publication-image">`;
+
+                    row.appendChild(paperDiv);
+                    row.appendChild(imageDiv);
+                    container.appendChild(row);
                 })
                 .catch(error => {
-                    const li = document.createElement("li");
-                    li.className = "list-group-item text-danger";
-                    li.textContent = `Failed to load publication for DOI: ${doi}`;
-                    pubList.appendChild(li);
+                    const errorRow = document.createElement("div");
+                    errorRow.className = "publication-row text-danger";
+                    errorRow.innerHTML = `<p>Failed to load publication for DOI: ${doi}</p>`;
+                    container.appendChild(errorRow);
                     console.error(error);
                 });
         });
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
