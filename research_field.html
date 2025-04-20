@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Research Topics</title>
+</head>
+<body>
+
+    <div id="navbar-container"></div>
+
+    <script>
+        fetch("header.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            });
+    </script>
+
+    <h1>My Research Areas</h1>
+
+    <ul>
+        <li>Computational Fluid Dynamics (CFD)</li>
+        <li>Machine Learning for Environmental Modeling</li>
+        <li>Coastal Dune Dynamics</li>
+        <li>Physics-Informed Neural Networks (PINNs)</li>
+        <li>Shallow Water Simulations</li>
+    </ul>
+
+</body>
+</html>
