@@ -46,10 +46,10 @@
 
     <section class="publication-section container">
         <h2 class="text-center mb-4">Selected Publications</h2>
-
         <div id="publication-container"></div>
     </section>
 
+    <!-- ✅ Updated script starts here -->
     <script>
         const dois = [
             "https://doi.org/10.1007/s00366-025-02140-0",
@@ -69,10 +69,24 @@
 
         const container = document.getElementById("publication-container");
 
-        dois.forEach((doi, index) => {
-            fetch(`https://api.crossref.org/works/${doi}`)
-                .then(response => response.json())
-                .then(data => {
+        // ✅ Fetch all publication data and preserve order
+        Promise.all(
+            dois.map((doi) =>
+                fetch(`https://api.crossref.org/works/${doi}`)
+                    .then(response => response.json())
+                    .catch(error => ({ error, doi })) // ⬅️ catch and wrap errors with DOI
+            )
+        ).then(results => {
+            results.forEach((data, index) => {
+                if (data.error) {
+                    // ⛔ Show an error if a publication failed to load
+                    const errorRow = document.createElement("div");
+                    errorRow.className = "publication-row text-danger";
+                    errorRow.innerHTML = `<p>❌ Failed to load publication for DOI: ${data.doi}</p>`;
+                    container.appendChild(errorRow);
+                    console.error(data.error);
+                } else {
+                    // ✅ Show publication data as usual
                     const item = data.message;
                     const year = item.published['date-parts'][0][0];
                     const title = item.title[0];
@@ -86,7 +100,7 @@
                     paperDiv.className = "paper";
                     paperDiv.innerHTML = `
                         <p>${authors} (${year}). <em>${title}</em>. <strong>${journal}</strong>.
-                        <a href="https://doi.org/${doi}" target="_blank">DOI</a></p>
+                        <a href="https://doi.org/${dois[index]}" target="_blank">DOI</a></p>
                     `;
 
                     const imageDiv = document.createElement("div");
@@ -96,16 +110,11 @@
                     row.appendChild(paperDiv);
                     row.appendChild(imageDiv);
                     container.appendChild(row);
-                })
-                .catch(error => {
-                    const errorRow = document.createElement("div");
-                    errorRow.className = "publication-row text-danger";
-                    errorRow.innerHTML = `<p>Failed to load publication for DOI: ${doi}</p>`;
-                    container.appendChild(errorRow);
-                    console.error(error);
-                });
+                }
+            });
         });
     </script>
+    <!-- ✅ Updated script ends here -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
