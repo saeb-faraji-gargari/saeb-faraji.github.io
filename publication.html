@@ -30,6 +30,9 @@
             height: auto;
             border-radius: 8px;
         }
+        .view-button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -49,72 +52,129 @@
         <div id="publication-container"></div>
     </section>
 
-    <!-- ✅ Updated script starts here -->
-    <script>
-        const dois = [
-            "https://doi.org/10.1007/s00366-025-02140-0",
+    <!-- 10.1007/s00366-025-02140-0",
             "10.1016/j.jcp.2024.112931",
-            "https://doi.org/10.1007/s00366-020-01157-x",
+            "10.1007/s00366-020-01157-x",
             "10.1016/j.apm.2019.06.002",
-            "10.24200/sci.2017.4189",
-        ];
+            "local_doi_publications/doi_MDLSM_Navier_Stokes.html",
+            "10.24200/sci.2017.4189", -->
 
-        const images = [
-            "images/arbitrary_Lagrangian_DLSM_capturing_Saint–Venant_equations.png",
-            "images/UMLS.png",
-            "images/Fully_Lagrangian_freesurface_MDLSM_method.png",
-            "images/Multiphase.png",
-            "images/nonlinear_MDLSM.png",
+    <script>
+        const publications = [
+            {
+                title: "An arbitrary Lagrangian discrete least squares meshfree method for discontinuity capturing with application in the Saint–Venant equations",
+                authors: "Saeb Faraji Gargari, Ziyang Huang, Sadegh Dabiri",
+                year: "2025",
+                journal: "Engineering with Computers",
+                image: "images/arbitrary_Lagrangian_DLSM_capturing_Saint–Venant_equations.png",
+                localFile: "", // Empty string means no local file
+                link: "https://doi.org/10.1007/s00366-025-02140-0" // External DOI link
+            },
+            {
+                title: "An upwind moving least squares approximation to solve convection-dominated problems: An application in mixed discrete least squares meshfree method",
+                authors: "Saeb Faraji Gargari, Ziyang Huang, Sadegh Dabiri",
+                year: "2024",
+                journal: "Journal of Computational Physics",
+                image: "images/UMLS.png",
+                localFile: "", // Empty string means no local file
+                link: "https://doi.org/10.1016/j.jcp.2024.112931" // External DOI link
+            },
+            {
+                title: "A fully Lagrangian mixed discrete least squares meshfree method for simulating the free surface flow problems",
+                authors: "N. Eini, M. H. Afshar, S. Faraji Gargari, G. Shobeyri, A. Afshar",
+                year: "2020",
+                journal: "Engineering with Computers",
+                image: "images/Fully_Lagrangian_freesurface_MDLSM_method.png",
+                localFile: "", // Empty string means no local file
+                link: "https://doi.org/10.1007/s00366-020-01157-x" // External DOI link
+            },
+            {
+                title: "An Eulerian–Lagrangian mixed discrete least squares meshfree method for incompressible multiphase flow problems",
+                authors: "S. Faraji Gargari, M. Kolahdoozan, M.H. Afshar, S. Dabiri",
+                year: "2019",
+                journal: "Applied Mathematical Modelling",
+                image: "images/Multiphase.png",
+                localFile: "", // Empty string means no local file
+                link: "https://doi.org/10.1016/j.apm.2019.06.002" // External DOI link
+            },
+            {
+                title: "Mixed Discrete Least Squares Meshfree method for solving the incompressible Navier–Stokes equations",
+                authors: "Saeb Faraji, M. Kolahdoozan, M.H. Afshar",
+                year: "2018",
+                journal: "Engineering Analysis with Boundary Elements",
+                image: "images/MDLSM_Navier_Stokes.png",
+                //localFile: "local_doi_publications/doi_MDLSM_Navier_Stokes.html", // Local file
+                link: "https://doi.org/10.1016/j.enganabound.2017.12.018" // External DOI link
+            },
+            {
+                title: "Mixed discrete least squares meshless method for solving the linear and non-linear propagation problems",
+                authors: "Saeb Faraji, M. Kolahdoozan, M.H. Afshar",
+                year: "2017",
+                journal: "Scientia Iranica",
+                image: "images/nonlinear_MDLSM.png",
+                localFile: "", // Empty string means no local file
+                link: "https://doi.org/10.24200/sci.2017.4189" // External DOI link
+            }
         ];
 
         const container = document.getElementById("publication-container");
 
-        // ✅ Fetch all publication data and preserve order
-        Promise.all(
-            dois.map((doi) =>
-                fetch(`https://api.crossref.org/works/${doi}`)
-                    .then(response => response.json())
-                    .catch(error => ({ error, doi })) // ⬅️ catch and wrap errors with DOI
-            )
-        ).then(results => {
-            results.forEach((data, index) => {
-                if (data.error) {
-                    // ⛔ Show an error if a publication failed to load
-                    const errorRow = document.createElement("div");
-                    errorRow.className = "publication-row text-danger";
-                    errorRow.innerHTML = `<p>❌ Failed to load publication for DOI: ${data.doi}</p>`;
-                    container.appendChild(errorRow);
-                    console.error(data.error);
-                } else {
-                    // ✅ Show publication data as usual
-                    const item = data.message;
-                    const year = item.published['date-parts'][0][0];
-                    const title = item.title[0];
-                    const journal = item['container-title'][0];
-                    const authors = item.author.map(a => `${a.given} ${a.family}`).join(', ');
+        publications.forEach((pub, index) => {
+            const row = document.createElement("div");
+            row.className = "publication-row";
 
-                    const row = document.createElement("div");
-                    row.className = "publication-row";
+            const paperDiv = document.createElement("div");
+            paperDiv.className = "paper";
 
-                    const paperDiv = document.createElement("div");
-                    paperDiv.className = "paper";
-                    paperDiv.innerHTML = `
-                        <p>${authors} (${year}). <em>${title}</em>. <strong>${journal}</strong>.
-                        <a href="https://doi.org/${dois[index]}" target="_blank">DOI</a></p>
-                    `;
+            // If there's a local file, display the content
+            if (pub.localFile) {
+                fetch(pub.localFile)
+                    .then(response => response.text())
+                    .then(data => {
+                        paperDiv.innerHTML = `
+                            <h4>${pub.title}</h4>
+                            <p><strong>Authors:</strong> ${pub.authors}</p>
+                            <p><strong>Year:</strong> ${pub.year}</p>
+                            <p><strong>Journal:</strong> ${pub.journal}</p>
+                            <div>${data}</div>
+                        `;
+                    })
+                    .catch(error => {
+                        paperDiv.innerHTML = `
+                            <h4>${pub.title}</h4>
+                            <p><strong>Authors:</strong> ${pub.authors}</p>
+                            <p><strong>Year:</strong> ${pub.year}</p>
+                            <p><strong>Journal:</strong> ${pub.journal}</p>
+                            <p><span class="text-danger">Error loading local file: ${pub.localFile}</span></p>
+                        `;
+                    });
+            } else {
+                paperDiv.innerHTML = `
+                    <h4>${pub.title}</h4>
+                    <p><strong>Authors:</strong> ${pub.authors}</p>
+                    <p><strong>Year:</strong> ${pub.year}</p>
+                    <p><strong>Journal:</strong> ${pub.journal}</p>
+                `;
+            }
 
-                    const imageDiv = document.createElement("div");
-                    imageDiv.className = "figure";
-                    imageDiv.innerHTML = `<img src="${images[index]}" alt="Figure ${index + 1}" class="publication-image">`;
+            // Add the "View Paper" link/button for each publication
+            const viewButton = document.createElement("a");
+            viewButton.className = "btn btn-primary view-button";
+            viewButton.href = pub.link;
+            viewButton.target = "_blank";
+            viewButton.innerText = "View Paper";
 
-                    row.appendChild(paperDiv);
-                    row.appendChild(imageDiv);
-                    container.appendChild(row);
-                }
-            });
+            paperDiv.appendChild(viewButton);
+
+            const imageDiv = document.createElement("div");
+            imageDiv.className = "figure";
+            imageDiv.innerHTML = `<img src="${pub.image}" alt="Figure ${index + 1}" class="publication-image">`;
+
+            row.appendChild(paperDiv);
+            row.appendChild(imageDiv);
+            container.appendChild(row);
         });
     </script>
-    <!-- ✅ Updated script ends here -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
